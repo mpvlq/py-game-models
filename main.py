@@ -12,19 +12,19 @@ def main() -> None:
         players_data = json.load(f)
 
     for nickname, player_data in players_data.items():
-        race_data = player_data["race"]
+        race_data = player_data.get("race")
         race, _ = Race.objects.get_or_create(
-            name=race_data["name"],
-            defaults={"description": race_data["description"]},
+            name=race_data.get("name"),
+            defaults={"description": race_data.get("description")},
         )
 
-        guild_data = player_data["guild"]
+        guild_data = player_data.get("guild")
         if guild_data is not None:
             guild, _ = Guild.objects.get_or_create(
-                name=(guild_data["name"] if guild_data.get("name") else None),
+                name=(guild_data.get("name") if guild_data.get("name") else None),
                 defaults={
                     "description":
-                        guild_data["description"]
+                        guild_data.get("description")
                         if guild_data.get("description")
                         else None
                 },
@@ -32,17 +32,17 @@ def main() -> None:
         else:
             guild = None
 
-        for skill in race_data["skills"]:
+        for skill in race_data.get("skills"):
             Skill.objects.get_or_create(
-                name=skill["name"],
-                defaults={"bonus": skill["bonus"], "race": race},
+                name=skill.get("name"),
+                defaults={"bonus": skill.get("bonus"), "race": race},
             )
 
         Player.objects.get_or_create(
             nickname=nickname,
             defaults={
-                "email": player_data["email"],
-                "bio": player_data["bio"],
+                "email": player_data.get("email"),
+                "bio": player_data.get("bio"),
                 "guild": guild,
                 "race": race
             },
